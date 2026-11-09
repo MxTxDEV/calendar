@@ -1,8 +1,12 @@
-import 'dotenv/config';
+import dotenv from 'dotenv';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
+// .env do diretório atual e, se existir, o da raiz do repositório (sem sobrescrever variáveis já definidas)
+dotenv.config({ quiet: true } as any);
+dotenv.config({ path: path.resolve(here, '../../.env'), quiet: true } as any);
+dotenv.config({ path: path.resolve(here, '../../../.env'), quiet: true } as any);
 
 function bool(v: string | undefined, def: boolean) {
   if (v === undefined || v === '') return def;

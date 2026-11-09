@@ -32,6 +32,7 @@ export function createApp() {
           'connect-src': ["'self'"],
           'worker-src': ["'self'"],
           'manifest-src': ["'self'"],
+          'upgrade-insecure-requests': null,
         },
       },
       crossOriginEmbedderPolicy: false,

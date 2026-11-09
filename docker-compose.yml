@@ -1,0 +1,27 @@
+# Subida completa: PostgreSQL + MyDay. Defina as variáveis em um arquivo .env ao lado deste.
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: myday
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?defina DB_PASSWORD}
+      POSTGRES_DB: myday
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck: { test: ["CMD-SHELL", "pg_isready -U myday"], interval: 5s, retries: 10 }
+  app:
+    build: .
+    restart: unless-stopped
+    depends_on: { db: { condition: service_healthy } }
+    ports: ["3000:3000"]
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgres://myday:${DB_PASSWORD}@db:5432/myday
+      SESSION_SECRET: ${SESSION_SECRET:?defina SESSION_SECRET}
+      VAPID_PUBLIC_KEY: ${VAPID_PUBLIC_KEY:?rode npm run vapid}
+      VAPID_PRIVATE_KEY: ${VAPID_PRIVATE_KEY:?rode npm run vapid}
+      VAPID_SUBJECT: ${VAPID_SUBJECT:-mailto:voce@exemplo.com}
+      APP_URL: ${APP_URL:-http://localhost:3000}
+      ALLOW_SIGNUP: ${ALLOW_SIGNUP:-true}
+volumes:
+  pgdata:
