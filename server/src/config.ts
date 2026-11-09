@@ -35,7 +35,8 @@ export const config = {
   databaseSsl: bool(process.env.DATABASE_SSL, false),
   sessionSecret: process.env.SESSION_SECRET ?? '',
   sessionDays: Number(process.env.SESSION_DAYS ?? 60),
-  allowSignup: bool(process.env.ALLOW_SIGNUP, true),
+  // em produção, só a primeira conta pode ser criada, a menos que ALLOW_SIGNUP=true
+  allowSignup: bool(process.env.ALLOW_SIGNUP, env !== 'production'),
   vapid: {
     publicKey: process.env.VAPID_PUBLIC_KEY ?? '',
     privateKey: process.env.VAPID_PRIVATE_KEY ?? '',
@@ -49,10 +50,7 @@ export const config = {
 
 export function assertProductionConfig() {
   if (!config.isProd) return;
-  if (!config.sessionSecret || config.sessionSecret.length < 32) {
+  if (config.sessionSecret.length < 32) {
     throw new Error('SESSION_SECRET precisa ter pelo menos 32 caracteres em produção.');
-  }
-  if (!config.vapid.publicKey || !config.vapid.privateKey) {
-    console.warn('[config] Chaves VAPID ausentes: notificações push ficarão desativadas. Rode `npm run vapid`.');
   }
 }

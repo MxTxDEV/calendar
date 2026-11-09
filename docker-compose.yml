@@ -17,11 +17,11 @@ services:
     environment:
       NODE_ENV: production
       DATABASE_URL: postgres://myday:${DB_PASSWORD}@db:5432/myday
-      SESSION_SECRET: ${SESSION_SECRET:?defina SESSION_SECRET}
-      VAPID_PUBLIC_KEY: ${VAPID_PUBLIC_KEY:?rode npm run vapid}
-      VAPID_PRIVATE_KEY: ${VAPID_PRIVATE_KEY:?rode npm run vapid}
+      SESSION_SECRET: ${SESSION_SECRET:-}
+      VAPID_PUBLIC_KEY: ${VAPID_PUBLIC_KEY:-}
+      VAPID_PRIVATE_KEY: ${VAPID_PRIVATE_KEY:-}
       VAPID_SUBJECT: ${VAPID_SUBJECT:-mailto:voce@exemplo.com}
       APP_URL: ${APP_URL:-http://localhost:3000}
-      ALLOW_SIGNUP: ${ALLOW_SIGNUP:-true}
+      ALLOW_SIGNUP: ${ALLOW_SIGNUP:-false}
 volumes:
   pgdata:

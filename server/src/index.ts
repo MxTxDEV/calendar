@@ -2,12 +2,14 @@ import { createApp } from './app.js';
 import { assertProductionConfig, config } from './config.js';
 import { migrate } from './db/migrate.js';
 import { pool } from './db/pool.js';
+import { initSecrets } from './lib/secrets.js';
 import { pushEnabled } from './notifications/push.js';
 import { startScheduler, stopScheduler } from './notifications/scheduler.js';
 
 async function main() {
-  assertProductionConfig();
   await migrate();
+  await initSecrets();
+  assertProductionConfig();
   const app = createApp();
   const server = app.listen(config.port, () => {
     console.log(`[myday] servidor em http://localhost:${config.port} (${config.env})`);

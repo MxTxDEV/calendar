@@ -50,6 +50,7 @@ export function SettingsPage() {
     queryKey: ['devices'],
     queryFn: () => api<{ subscriptions: { id: string; deviceLabel: string; createdAt: string; lastSuccessAt: string | null; lastError: string | null }[] }>('/push/subscriptions').then((r) => r.subscriptions),
   });
+  const scheduler = useQuery({ queryKey: ['scheduler-info'], queryFn: () => api<{ available: boolean; url?: string; serverless?: boolean }>('/push/scheduler-info'), staleTime: Infinity });
   const history = useQuery({ queryKey: ['history'], queryFn: () => api<{ history: any[] }>('/push/history').then((r) => r.history) });
 
   if (!s) return <div className="skeleton" style={{ height: 300 }} />;
@@ -167,6 +168,20 @@ export function SettingsPage() {
           </div>
         )}
       </div>
+
+      {scheduler.data?.available && scheduler.data.serverless && (
+        <>
+          <h2 style={{ margin: '28px 0 10px' }}>Agendador automático</h2>
+          <div className="card pad col small">
+            <p>Para que os lembretes cheguem no minuto certo, um serviço gratuito precisa “acordar” o servidor a cada minuto. Em <b>cron-job.org</b>, crie um job com intervalo de <b>1 minuto</b> chamando este endereço (guarde-o em segredo):</p>
+            <input className="input" readOnly value={scheduler.data.url} onFocus={(e) => e.currentTarget.select()} aria-label="Endereço do agendador" />
+            <div className="row">
+              <button className="btn sm" onClick={() => { void navigator.clipboard?.writeText(scheduler.data!.url!).then(() => toast('Endereço copiado')); }}>Copiar endereço</button>
+              <button className="btn sm" onClick={async () => { try { await fetch(scheduler.data!.url!); toast('Agendador executado ✓'); } catch { toast('Falha ao chamar o agendador', { kind: 'error' }); } }}>Testar agora</button>
+            </div>
+          </div>
+        </>
+      )}
 
       {!!history.data?.length && (
         <>

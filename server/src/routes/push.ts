@@ -106,3 +106,14 @@ pushRouter.get('/history', async (req, res) => {
   );
   res.json({ history: rows });
 });
+
+/** URL do agendador externo (somente para a primeira conta, que é a dona da instalação). */
+pushRouter.get('/scheduler-info', async (req, res) => {
+  const owner = await query('SELECT id FROM users ORDER BY created_at LIMIT 1');
+  if (owner.rows[0]?.id !== userId(req) || !config.cronSecret) {
+    res.json({ available: false });
+    return;
+  }
+  const base = `${req.protocol}://${req.get('host')}`;
+  res.json({ available: true, url: `${base}/api/cron/tick?key=${config.cronSecret}`, serverless: config.serverless });
+});

@@ -83,8 +83,10 @@ authRouter.get('/me', requireAuth, (req, res) => {
   res.json({ user: req.user });
 });
 
-authRouter.get('/config', (_req, res) => {
-  res.json({ allowSignup: config.allowSignup });
+authRouter.get('/config', async (_req, res) => {
+  // a primeira conta sempre pode ser criada
+  const { rows } = await query('SELECT count(*)::int AS n FROM users');
+  res.json({ allowSignup: config.allowSignup || rows[0].n === 0 });
 });
 
 const passwordSchema = z.object({

@@ -1,6 +1,7 @@
 // Função serverless da Vercel: executa o app Express compilado (server/dist).
 import { createApp } from '../server/dist/app.js';
 import { migrate } from '../server/dist/db/migrate.js';
+import { initSecrets } from '../server/dist/lib/secrets.js';
 
 const app = createApp();
 let ready = null;
@@ -8,7 +9,7 @@ let ready = null;
 export default async function handler(req, res) {
   try {
     // migrações são idempotentes; rodam uma vez por instância fria
-    ready ??= migrate(false).catch((err) => {
+    ready ??= migrate(false).then(() => initSecrets()).catch((err) => {
       ready = null;
       throw err;
     });
