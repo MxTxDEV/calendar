@@ -8,7 +8,8 @@ pg.types.setTypeParser(1083, (v) => v); // time
 export const pool = new pg.Pool({
   connectionString: config.databaseUrl,
   ssl: config.databaseSsl ? { rejectUnauthorized: false } : undefined,
-  max: 10,
+  max: config.serverless ? 3 : 10,
+  idleTimeoutMillis: config.serverless ? 10_000 : 30_000,
 });
 
 pool.on('error', (err) => console.error('[db] erro inesperado no pool', err));

@@ -9,6 +9,7 @@ import { errorHandler, HttpError } from './lib/errors.js';
 import { loadUser, requireAuth, requireJsonForMutations } from './middleware/auth.js';
 import { authRouter } from './routes/auth.js';
 import { categoriesRouter } from './routes/categories.js';
+import { cronRouter } from './routes/cron.js';
 import { dashboardRouter } from './routes/dashboard.js';
 import { pushRouter } from './routes/push.js';
 import { settingsRouter } from './routes/settings.js';
@@ -54,6 +55,8 @@ export function createApp() {
     res.json({ ok: true, time: new Date().toISOString() });
   });
 
+  // endpoint do agendador: autenticado por CRON_SECRET (não usa sessão de usuário)
+  api.use('/cron', cronRouter);
   api.use('/auth', authRouter);
   api.use('/push', (req, res, next) => (req.path === '/public-key' ? next() : requireAuth(req, res, next)), pushRouter);
   api.use('/categories', requireAuth, categoriesRouter);

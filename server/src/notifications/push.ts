@@ -3,12 +3,19 @@ import { config } from '../config.js';
 import { query } from '../db/pool.js';
 
 let configured = false;
+let warnedInvalid = false;
 
 export function pushEnabled() {
   if (configured) return true;
   const { publicKey, privateKey, subject } = config.vapid;
   if (!publicKey || !privateKey) return false;
-  webpush.setVapidDetails(subject, publicKey, privateKey);
+  try {
+    webpush.setVapidDetails(subject, publicKey, privateKey);
+  } catch (err) {
+    if (!warnedInvalid) console.error('[push] chaves VAPID inválidas — notificações desativadas:', (err as Error).message);
+    warnedInvalid = true;
+    return false;
+  }
   configured = true;
   return true;
 }

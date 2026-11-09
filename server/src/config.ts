@@ -21,10 +21,17 @@ export const config = {
   isTest: env === 'test',
   port: Number(process.env.PORT ?? 3000),
   appUrl: (process.env.APP_URL ?? 'http://localhost:5173').replace(/\/$/, ''),
+  // Na Vercel/Neon a URL costuma vir como DATABASE_URL ou POSTGRES_URL
   databaseUrl:
     env === 'test'
       ? process.env.TEST_DATABASE_URL ?? 'postgres://myday:myday@localhost:5432/myday_test'
-      : process.env.DATABASE_URL ?? 'postgres://myday:myday@localhost:5432/myday',
+      : process.env.DATABASE_URL ??
+        process.env.POSTGRES_URL ??
+        process.env.POSTGRES_PRISMA_URL ??
+        'postgres://myday:myday@localhost:5432/myday',
+  serverless: !!process.env.VERCEL,
+  /** Segredo para o endpoint /api/cron/tick (chamado por Vercel Cron ou um agendador externo) */
+  cronSecret: process.env.CRON_SECRET ?? '',
   databaseSsl: bool(process.env.DATABASE_SSL, false),
   sessionSecret: process.env.SESSION_SECRET ?? '',
   sessionDays: Number(process.env.SESSION_DAYS ?? 60),
