@@ -1,0 +1,17 @@
+{
+  "name": "myday",
+  "private": true,
+  "version": "1.0.0",
+  "description": "MyDay — calendário e assistente pessoal (PWA + Web Push)",
+  "workspaces": ["server", "web"],
+  "scripts": {
+    "dev": "npm run dev -w server & npm run dev -w web",
+    "build": "npm run build -w web && npm run build -w server",
+    "start": "npm run start -w server",
+    "migrate": "npm run migrate -w server",
+    "vapid": "npm run vapid -w server",
+    "test": "npm test -w server && npm test -w web",
+    "typecheck": "npm run typecheck -w server && npm run typecheck -w web"
+  },
+  "engines": { "node": ">=20" }
+}
